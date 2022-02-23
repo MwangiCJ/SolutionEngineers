@@ -13,7 +13,7 @@ namespace ms_account_and_credit_card.Controllers
         public ActionResult Index()
         {
            
-            return Ok("Ok");
+            return Redirect("/swagger");
         }
 
         

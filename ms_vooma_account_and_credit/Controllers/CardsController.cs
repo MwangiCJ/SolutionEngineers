@@ -47,6 +47,25 @@ namespace ms_vooma_account_and_credit.Controllers
             return Ok(card);
         }
 
+        // GET: api/Cards/ForAccount/5
+        [HttpGet("ForAccount/{id}")]
+        public async Task<IActionResult> GetCardForAccount([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var account = await _context.accounts.Include(e=>e.MyCards).FirstOrDefaultAsync(c=>c.AccountId==id);
+
+            if (account == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(account.MyCards);
+        }
+
         // PUT: api/Cards/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCard([FromRoute] int id, [FromBody] Card card)
@@ -60,6 +79,12 @@ namespace ms_vooma_account_and_credit.Controllers
             {
                 return BadRequest();
             }
+
+            if (card.CardType != _context.cards.Find(id).CardType)
+            {
+                return BadRequest(new { Message ="Card type cannot be changed."});
+            }
+
 
             _context.Entry(card).State = EntityState.Modified;
 
@@ -89,6 +114,13 @@ namespace ms_vooma_account_and_credit.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            var cardType = card.CardType.Trim().ToUpper();
+            string[] allowedCardTypes = new[] {"VIRTUAL", "PHYSICAL"};
+
+            if (!allowedCardTypes.Contains(cardType))
+            {
+                return BadRequest(new { Message="CardType must be one of the following", AllowedCardTypes = allowedCardTypes });
             }
 
             _context.cards.Add(card);
