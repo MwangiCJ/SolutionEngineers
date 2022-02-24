@@ -1,8 +1,6 @@
 ﻿using ms_account_and_credit_card.Models;
 
 using Microsoft.EntityFrameworkCore;
-using System;
-
 namespace ms_account_and_credit_card.DB
 {
     public class DBCtx : DbContext
